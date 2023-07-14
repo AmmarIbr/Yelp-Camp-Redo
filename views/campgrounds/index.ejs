@@ -1,25 +1,38 @@
 <% layout('/layouts/boilerplate.ejs') %>
-<h1>All Campgrounds</h1>
-<div>
-  <a href="/campgrounds/new">Add Campgrounds</a>
-</div>
+<div id="clusterMap" style='width:100%; height: 350px;'></div>
+  <h1 class="mb-3">All Campgrounds</h1>
 
-<% for(let campground of campgrounds) { %>
-<div class="card mb-3">
-  <div class="row">
-    <div class="col-md-4">
-      <img class="img-fluid" src="<%=campground.image%>" alt="" />
+  <% for(let campground of campgrounds) { %>
+    <div class="card mb-3">
+      <div class="row">
+        <div class="col-md-4">
+          <% if(campground.images.length) { %>
+            <img class="img-fluid" src="<%=campground.images[0].url%>" alt="" />
+            <% } else { %>
+              <img class="img-fluid"
+                src="https://res.cloudinary.com/dbzrrl9ak/image/upload/v1688883921/YelpCamp/ykcycfhrowcdcub0rmps.png" alt="" />
+              <% } %>
+        </div>
+        <div class="col-md-8">
+          <h5 class="card-title">
+            <%=campground.title%>
+          </h5>
+          <p class="card-text">
+            <%=campground.description%>
+          </p>
+          <p class="card-text">
+            <small class="text-muted">
+              <%=campground.location%>
+            </small>
+          </p>
+          <a href="/campgrounds/<%=campground._id%>" class="btn btn-primary">View <%=campground.title%></a>
+        </div>
+      </div>
     </div>
-    <div class="col-md-8">
-      <h5 class="card-title"><%=campground.title%></h5>
-      <p class="card-text"><%=campground.description%></p>
-      <p class="card-text">
-        <small class="text-muted"><%=campground.location%></small>
-      </p>
-      <a href="/campgrounds/<%=campground._id%>" class="btn btn-primary"
-        >View <%=campground.title%></a
-      >
-    </div>
-  </div>
-</div>
-<% } %>
+    <% } %>
+
+    <script>
+      const mapToken = '<%-process.env.MAPBOX_TOKEN%>'
+      const campgrounds = {features : <%-JSON.stringify(campgrounds)%>}
+    </script>
+    <script src="/scripts/clusterMap.js"></script>
