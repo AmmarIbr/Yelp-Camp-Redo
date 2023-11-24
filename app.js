@@ -2,6 +2,7 @@ if (process.env.NODE_ENV !== "produciton") {
   require('dotenv').config()
 }
 
+
 const express = require("express");
 const path = require("path");
 const ejsMate = require("ejs-mate");
@@ -14,13 +15,18 @@ const flash = require('connect-flash')
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
 const User = require('./models/user.js')
+const MongoDBStore = require("connect-mongo")(session);
+const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/yelp-camp"
+const secret = process.env.SECRET || 'thisshouldbeabettersecret'
+//process.env.DB_URL
 
+//"mongodb://127.0.0.1:27017/yelp-camp"
 
 const campgroundRoutes = require('./routes/campgrounds.js')
 const reviewRoutes = require('./routes/reviews.js')
 const userRoutes = require('./routes/users.js')
 
-mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp", {
+mongoose.connect(dbUrl, {
   useNewUrlParser: true,
 });
 
@@ -39,8 +45,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")))
 
+
+
+const store = new MongoDBStore({
+  url: dbUrl,
+  secret,
+  touchAfter: 24 * 3600
+})
+
+store.on("error", function(e) {
+  console.log("session Store Error:", e)
+})
+
 const sessionConfig = {
-  secret: "thisshouldbeabettersecret",
+  store,
+  secret,
   resave: false, //to remove deprecation warning
   saveUninitialized: true, //to remove deprecation warning
   cookie: {
