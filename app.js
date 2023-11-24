@@ -18,6 +18,7 @@ const User = require('./models/user.js')
 const MongoDBStore = require("connect-mongo")(session);
 const dbUrl = process.env.DB_URL || "mongodb://127.0.0.1:27017/yelp-camp"
 const secret = process.env.SECRET || 'thisshouldbeabettersecret'
+const port = process.env.PORT || 3000
 //process.env.DB_URL
 
 //"mongodb://127.0.0.1:27017/yelp-camp"
@@ -95,8 +96,8 @@ app.get('/', (req, res) => {
   res.render('home')
 });
 
-app.listen(3000, () => {
-  console.log("Serving on port 3000");
+app.listen(port, () => {
+  console.log(`Serving on port ${port}`);
 });
 
 app.all("*", (req, res, next) => {
